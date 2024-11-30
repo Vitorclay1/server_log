@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizador de Imagem</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+      }
+      .visualizador {
+        width: 100%;
+        height: 100vh;
+        padding: auto;
+        text-align: center;
+        overflow: auto;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+      }
+
+      .controles {
+        position: fixed;
+        top: 20px;
+        right: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      #imagem {
+        max-width: 95%;
+        max-height: 95%;
+        height: auto;
+        transition: transform 0.2s;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        transform-origin: center;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@1.1.1/dist/heic2any.min.js"></script>
+  </head>
+  <body>
+    <div class="visualizador">
+      <img
+        id="imagem"
+        src="{{ url_for('static_file', name=name) }}"
+        alt="Imagem"
+      />
+    </div>
+    <div class="controles">
+      <button id="zoom-in" aria-label="Ampliar imagem" tabindex="1">+</button>
+      <button id="zoom-out" aria-label="Reduzir imagem" tabindex="2">-</button>
+      <button id="reset" aria-label="Resetar zoom" tabindex="3">Reset</button>
+    </div>
+
+    <script>
+      const imagem = document.getElementById("imagem");
+      let zoom = 1;
+      let margintop = 0;
+      let marginleft = 0;
+      let marginright = 0;
+      let marginbottom = 0;
+
+      function atualizarMargens() {
+        imagem.style.marginTop = `${margintop}px`;
+        imagem.style.marginLeft = `${marginleft}px`;
+        imagem.style.marginRight = `${marginright}px`;
+        imagem.style.marginBottom = `${marginbottom}px`;
+      }
+
+      document.getElementById("zoom-in").addEventListener("click", () => {
+        zoom += 0.1;
+        margintop += 100;
+        marginleft += 200;
+        marginright += 82;
+        marginbottom += 35;
+        imagem.style.transform = `scale(${zoom})`;
+        atualizarMargens();
+      });
+
+      document.getElementById("zoom-out").addEventListener("click", () => {
+        zoom -= 0.1;
+        margintop -= 100;
+        marginleft -= 200;
+        marginright -= 82;
+        marginbottom -= 35;
+        if (zoom < 1) {
+          zoom = 1;
+          margintop = 0;
+          marginleft = 0;
+          marginright = 0;
+          marginbottom = 0;
+        }
+        imagem.style.transform = `scale(${zoom})`;
+        atualizarMargens();
+      });
+
+      document.getElementById("reset").addEventListener("click", () => {
+        zoom = 1;
+        margintop = 0;
+        marginleft = 0;
+        marginright = 0;
+        marginbottom = 0;
+        imagem.style.transform = `scale(${zoom})`;
+        atualizarMargens();
+      });
+    </script>
+    <script>
+      heic2any.convert({
+        heic: document.getElementById("imagem").src,
+        format: "jpeg",
+        quality: 1,
+      });
+    </script>
+  </body>
+</html>
